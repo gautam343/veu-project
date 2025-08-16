@@ -192,7 +192,7 @@ const isDarkMode = ref(true);
 const toggleTheme = () => { isDarkMode.value = !isDarkMode.value; };
 
 // --- YOUR PERSONALIZED DETAILS (ORIGINAL TEXT RESTORED) --- //
-const name = ref('Gautam Shamra');
+const name = ref('Gautam Sharma');
 const profession = ref('Data Science Student | Machine Learning Enthusiast');
 const profilePictureUrl = ref('/profile.jpg');
 const resumeUrl = ref('Gautam-Sharma-Resume.pdf');
