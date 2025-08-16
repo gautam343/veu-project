@@ -34,11 +34,11 @@
             <h1 class="main-title">{{ name }}</h1>
             <h2 class="subtitle-profession">{{ profession }}</h2>
             <p class="panel-body bio">{{ bio }}</p>
-             <div class="social-links-hero">
-               <a v-for="link in socials" :key="link.name" :href="link.url" target="_blank" class="social-icon-link">
-                 <i :class="'icon icon-' + link.name.toLowerCase()"></i>
-               </a>
-            </div>
+              <div class="social-links-hero">
+                  <a v-for="link in socials" :key="link.name" :href="link.url" target="_blank" class="social-icon-link">
+                    <i :class="'icon icon-' + link.name.toLowerCase()"></i>
+                  </a>
+              </div>
           </div>
           <div class="profile-picture-container" data-aos="fade-left">
             <img :src="profilePictureUrl" alt="Profile Picture" class="profile-picture" />
@@ -49,12 +49,12 @@
       <section id="experience" class="content-panel" data-aos="fade-up">
         <h2 class="panel-title mono-font"><i class="icon icon-briefcase"></i><span>Work Experience</span></h2>
         <div class="timeline">
-            <div class="timeline-item">
+            <div class="timeline-item" v-for="exp in experience" :key="exp.title">
                 <div class="timeline-dot"></div>
-                <h3>{{ experience.title }}</h3>
-                <p class="timeline-meta">{{ experience.company }} | {{ experience.duration }}</p>
+                <h3>{{ exp.title }}</h3>
+                <p class="timeline-meta">{{ exp.company }} | {{ exp.duration }}</p>
                 <ul class="experience-list">
-                    <li v-for="point in experience.points" :key="point">{{ point }}</li>
+                    <li v-for="point in exp.points" :key="point">{{ point }}</li>
                 </ul>
             </div>
         </div>
@@ -133,8 +133,7 @@
                 <p>{{ cert.issuer }}</p>
               </div>
             </div>
-            <embed v-if="cert.url.endsWith('.pdf')" :src="cert.url" type="application/pdf" width="100%" height="700px" class="pdf-embed" />
-            <a v-else-if="cert.url !== '#'" :href="cert.url" target="_blank" class="cert-link-button">View Credential</a>
+            <a v-if="cert.url && cert.url !== '#'" :href="cert.url" target="_blank" class="cta-button" style="display: inline-block; margin-top: 1rem;">View Credential</a>
           </div>
         </div>
       </section>
@@ -149,8 +148,7 @@
               <p>{{ name }}</p>
             </div>
           </div>
-          <embed v-if="resumeUrl.endsWith('.pdf')" :src="resumeUrl" type="application/pdf" width="100%" height="700px" class="pdf-embed" />
-          <a v-else :href="resumeUrl" target="_blank" class="cert-link-button">View Resume</a>
+          <a :href="resumeUrl" target="_blank" class="cta-button" style="display: inline-block; margin-top: 1rem;">View Resume</a>
         </div>
       </section>
       
@@ -191,22 +189,33 @@ import { ref, onMounted, nextTick } from 'vue';
 const isDarkMode = ref(true);
 const toggleTheme = () => { isDarkMode.value = !isDarkMode.value; };
 
-// --- YOUR PERSONALIZED DETAILS (ORIGINAL TEXT RESTORED) --- //
+// --- YOUR PERSONALIZED DETAILS (MODIFIED) --- //
 const name = ref('Gautam Sharma');
 const profession = ref('Data Science Student | Machine Learning Enthusiast');
 const profilePictureUrl = ref('/profile.jpg');
 const resumeUrl = ref('Gautam-Sharma-Resume.pdf');
 const bio = ref(`I am an ambitious and result-driven individual with practical experience leveraging predictive modeling and analytics to solve complex business problems. Aims to apply a deep understanding of machine learning algorithms to deliver impactful insights and support data-driven business growth.`);
 const email = ref('gautam.sharma22@st.niituniversity.in');
-const experience = ref({
-    title: 'Marketing Analytics Intern',
-    company: 'Super Collections, Jhunjhunu/Remote',
-    duration: 'June 2025 - Aug 2025',
-    points: [
-        'Worked on optimisation of online selling portals via data analytics to provide them with visualization dashboards.',
-        'Managed the online presence of the company and produced dashboards for data visualization.'
-    ]
-});
+const experience = ref([
+    {
+        title: 'Marketing Analytics Intern',
+        company: 'Super Collections, Jhunjhunu/Remote',
+        duration: 'June 2025 - Aug 2025',
+        points: [
+            'Worked on optimisation of online selling portals via data analytics to provide them with visualization dashboards.',
+            'Managed the online presence of the company and produced dashboards for data visualization.'
+        ]
+    },
+    {
+        title: 'Learning Assistant, Digital Marketing and Storytelling Desk',
+        company: 'Center of Excellence in Education Technology (COEET), NIIT University',
+        duration: 'Aug 2024 - Dec 2024',
+        points: [
+            'Mentored and guided teams to include storytelling in their projects.',
+            'Handled Instagram / LinkedIn and the organization website for all core operations.'
+        ]
+    }
+]);
 const projects = ref([
   { 
     id: 1, 
@@ -235,14 +244,6 @@ const pOR = ref([
       organization: 'NIIT University',
       points: [
         'Organized EdTech Growth Camp Event April 2025, managing and supporting tech startup founders.'
-      ]
-    },
-    {
-      title: 'Learning Assistant, Digital Marketing and Storytelling Desk',
-      organization: 'Center of Excellence in Education Technology (COEET), NIIT University',
-      points: [
-        'Mentored and guided teams to include storytelling in their projects.',
-        'Handled Instagram / LinkedIn and the organization website for all core operations.'
       ]
     }
 ]);
@@ -345,8 +346,8 @@ h3 { color: var(--text-primary); font-weight: 600; font-size: 1.25rem; margin-bo
 .nav-link:hover { color: var(--accent-primary); }
 .theme-switcher { background: transparent; border: 1px solid var(--border-color); width: 50px; height: 26px; border-radius: 13px; cursor: pointer; display: flex; align-items: center; position: relative; transition: all var(--transition-speed) ease;}
 .icon-sun, .icon-moon { position: absolute; top: 3px; font-size: 16px; transition: all var(--transition-speed) ease; }
-.icon-sun { left: 5px; opacity: 0; color: #f39c12; }
-.icon-moon { left: 28px; opacity: 1; color: #f1c40f; }
+.icon-sun { left: 5px; opacity: 0; background-color: #f39c12; }
+.icon-moon { left: 28px; opacity: 1; background-color: #f1c40f; }
 .dark-theme .icon-sun { opacity: 1; }
 .dark-theme .icon-moon { opacity: 0; }
 
@@ -431,7 +432,6 @@ h3 { color: var(--text-primary); font-weight: 600; font-size: 1.25rem; margin-bo
 .cert-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
 .cert-info h3 { font-size: 1.1rem; color: var(--text-primary); margin: 0; }
 .cert-info p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; margin-top: 0.25rem;}
-.pdf-embed { border-radius: var(--border-radius-sm); border: 1px solid var(--border-color); }
 
 /* === CONTACT SECTION === */
 #contact h3 { font-size: 2rem; margin-bottom: 1rem;}
@@ -462,7 +462,6 @@ h3 { color: var(--text-primary); font-weight: 600; font-size: 1.25rem; margin-bo
 .social-icon-link .icon { background-color: currentColor; }
 .panel-title .icon { background-color: var(--accent-primary); }
 .skill-category .icon, .cert-header .icon { color: var(--accent-primary); background-color: var(--accent-primary); }
-.theme-switcher .icon { background-color: transparent; }
 .icon-sun { mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.64 5.64c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.64 5.64zM18.36 18.36c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.06 1.06c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.06-1.06zM18.36 5.64l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06c.39-.39.39-1.02 0-1.41s-1.02-.39-1.41 0zM5.64 18.36l-1.06 1.06c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.06-1.06c.39-.39.39-1.02 0-1.41s-1.03-.39-1.42 0z"/></svg>');}
 .icon-moon { mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M10 2c-1.82 0-3.53.5-5 1.35C7.99 5.08 10 8.3 10 12s-2.01 6.92-5 8.65C6.47 21.5 8.18 22 10 22c5.52 0 10-4.48 10-10S15.52 2 10 2z"/></svg>');}
 .icon-users { mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>');}
