@@ -190,7 +190,7 @@ const toggleSkill = (skill) => {
 
 // --- YOUR PERSONALIZED DETAILS FROM RESUME --- //
 
-const name = ref('Gautam Shamra');
+const name = ref('Gautam Sharma');
 const profession = ref('Data Science Student | Machine Learning Enthusiast');
 const profilePictureUrl = ref('/profile.jpg'); // Replace with your actual picture filename
 const resumeUrl = ref('Gautam-Sharma-Resume.pdf');
