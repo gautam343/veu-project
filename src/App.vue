@@ -1,5 +1,5 @@
 <template>
-  <div class="mw-container">
+  <div class="mw-container" @click="createRipple">
     <div class="animated-grid"></div>
     <div class="scanline-effect"></div>
     <div class="hud-border"></div>
@@ -59,101 +59,105 @@
             </div>
 
             <div class="tab-content">
-              <div v-if="activeTab === 'Identification'" class="content-section">
-                <h2 class="section-title typing-animation">SUBJECT ANALYSIS</h2>
-                <p class="bio">{{ bio }}</p>
-              </div>
-
-              <div v-if="activeTab === 'Skills'" class="content-section">
-                 <h2 class="section-title typing-animation">SKILLS</h2>
-                 <div class="skill-category" v-for="(skillList, category) in skills" :key="category">
-                    <h3 class="skill-category-title">{{ formatSkillCategory(category) }}</h3>
-                    <div class="skill-grid">
-                      <div v-for="skill in skillList" :key="skill" class="skill-tag">
-                        {{ skill }}
-                      </div>
-                    </div>
-                </div>
-              </div>
-
-              <div v-if="activeTab === 'Operations'" class="content-section">
-                <h2 class="section-title typing-animation">OPERATIONS</h2>
-                <div class="op-list">
-                  <div
-                    class="op-item"
-                    v-for="project in projects"
-                    :key="project.title"
-                    @click="toggleProject(project.title)"
-                    :class="{ 'expanded': expandedProject === project.title }"
-                  >
-                    <div class="op-header">
-                      <h3 class="op-title">{{ project.title }}</h3>
-                      <span class="op-status">COMPLETED</span>
-                    </div>
-                    <p class="op-desc">{{ project.description }}</p>
-                    <div class="op-tech">
-                        <strong>TECH DEPLOYED:</strong> {{ project.tech }}
-                    </div>
-                    <transition name="expand">
-                        <div v-if="expandedProject === project.title" class="op-details">
-                            <img :src="project.image" alt="Operation Screenshot" class="op-image">
-                        </div>
-                    </transition>
+              <transition name="fade" mode="out-in">
+                <div :key="activeTab" class="content-section">
+                  <div v-if="activeTab === 'Identification'">
+                    <h2 class="section-title typing-animation">SUBJECT ANALYSIS</h2>
+                    <p class="bio">{{ bio }}</p>
                   </div>
-                </div>
-              </div>
 
-              <div v-if="activeTab === 'Service Record'" class="content-section">
-                  <h2 class="section-title typing-animation">SERVICE RECORD</h2>
-                  <div class="record-list">
-                      <div class="record-item" v-for="exp in experience" :key="exp.title">
-                          <div class="record-info">
-                              <h3 class="record-title">{{ exp.title }}</h3>
-                              <p class="record-meta">{{ exp.company }}</p>
+                  <div v-if="activeTab === 'Skills'">
+                     <h2 class="section-title typing-animation">SKILLS</h2>
+                     <div class="skill-category" v-for="(skillList, category) in skills" :key="category">
+                        <h3 class="skill-category-title">{{ formatSkillCategory(category) }}</h3>
+                        <div class="skill-grid">
+                          <div v-for="skill in skillList" :key="skill" class="skill-tag">
+                            {{ skill }}
                           </div>
-                          <div class="record-duration">{{ exp.duration }}</div>
-                      </div>
+                        </div>
+                    </div>
                   </div>
-              </div>
 
-              <div v-if="activeTab === 'Certifications'" class="content-section">
-                  <h2 class="section-title typing-animation">AWARDS & COMMENDATIONS</h2>
-                  <div class="cert-list">
-                      <div class="cert-item" v-for="cert in certifications" :key="cert.name">
-                          <div class="cert-info">
-                              <h3 class="cert-title">{{ cert.name }}</h3>
-                              <p class="cert-issuer">{{ cert.issuer }}</p>
+                  <div v-if="activeTab === 'Operations'">
+                    <h2 class="section-title typing-animation">OPERATIONS</h2>
+                    <div class="op-list">
+                      <div
+                        class="op-item"
+                        v-for="project in projects"
+                        :key="project.title"
+                        @click.stop="toggleProject(project.title)" 
+                        :class="{ 'expanded': expandedProject === project.title }"
+                      >
+                        <div class="op-header">
+                          <h3 class="op-title">{{ project.title }}</h3>
+                          <span class="op-status">COMPLETED</span>
+                        </div>
+                        <p class="op-desc">{{ project.description }}</p>
+                        <div class="op-tech">
+                            <strong>TECH DEPLOYED:</strong> {{ project.tech }}
+                        </div>
+                        <transition name="expand">
+                            <div v-if="expandedProject === project.title" class="op-details">
+                                <img :src="project.image" alt="Operation Screenshot" class="op-image">
+                            </div>
+                        </transition>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="activeTab === 'Service Record'">
+                      <h2 class="section-title typing-animation">SERVICE RECORD</h2>
+                      <div class="record-list">
+                          <div class="record-item" v-for="exp in experience" :key="exp.title">
+                              <div class="record-info">
+                                  <h3 class="record-title">{{ exp.title }}</h3>
+                                  <p class="record-meta">{{ exp.company }}</p>
+                              </div>
+                              <div class="record-duration">{{ exp.duration }}</div>
                           </div>
-                          <a :href="cert.url" target="_blank" class="action-button cert-button">VIEW CREDENTIAL</a>
                       </div>
                   </div>
-              </div>
 
-              <div v-if="activeTab === 'Comms'" class="content-section">
-                    <h2 class="section-title typing-animation">ESTABLISH COMMS</h2>
-                    <form @submit.prevent="handleFormSubmit" class="contact-form">
-                        <div class="form-group">
-                            <label for="callsign">YOUR CALLSIGN (NAME)</label>
-                            <input type="text" id="callsign" v-model="formData.name" required class="form-input">
-                        </div>
-                         <div class="form-group">
-                            <label for="email">YOUR EMAIL</label>
-                            <input type="email" id="email" v-model="formData.email" required class="form-input">
-                        </div>
-                         <div class="form-group">
-                            <label for="message">MESSAGE</label>
-                            <textarea id="message" v-model="formData.message" required rows="5" class="form-textarea"></textarea>
-                        </div>
-                        <div class="form-footer">
-                            <button type="submit" class="action-button primary" :disabled="formStatus.isSending">
-                                {{ formStatus.isSending ? 'TRANSMITTING...' : 'SEND MESSAGE' }}
-                            </button>
-                            <p v-if="formStatus.message" class="form-status" :class="{ 'success': formStatus.isSuccess, 'error': !formStatus.isSuccess }">
-                                {{ formStatus.message }}
-                            </p>
-                        </div>
-                    </form>
-               </div>
+                  <div v-if="activeTab === 'Certifications'">
+                      <h2 class="section-title typing-animation">AWARDS & COMMENDATIONS</h2>
+                      <div class="cert-list">
+                          <div class="cert-item" v-for="cert in certifications" :key="cert.name">
+                              <div class="cert-info">
+                                  <h3 class="cert-title">{{ cert.name }}</h3>
+                                  <p class="cert-issuer">{{ cert.issuer }}</p>
+                              </div>
+                              <a :href="cert.url" target="_blank" class="action-button cert-button">VIEW CREDENTIAL</a>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div v-if="activeTab === 'Comms'">
+                        <h2 class="section-title typing-animation">ESTABLISH COMMS</h2>
+                        <form @submit.prevent="handleFormSubmit" class="contact-form">
+                            <div class="form-group">
+                                <label for="callsign">YOUR CALLSIGN (NAME)</label>
+                                <input type="text" id="callsign" v-model="formData.name" required class="form-input">
+                            </div>
+                             <div class="form-group">
+                                <label for="email">YOUR EMAIL</label>
+                                <input type="email" id="email" v-model="formData.email" required class="form-input">
+                            </div>
+                             <div class="form-group">
+                                <label for="message">MESSAGE</label>
+                                <textarea id="message" v-model="formData.message" required rows="5" class="form-textarea"></textarea>
+                            </div>
+                            <div class="form-footer">
+                                <button type="submit" class="action-button primary" :disabled="formStatus.isSending">
+                                    {{ formStatus.isSending ? 'TRANSMITTING...' : 'SEND MESSAGE' }}
+                                </button>
+                                <p v-if="formStatus.message" class="form-status" :class="{ 'success': formStatus.isSuccess, 'error': !formStatus.isSuccess }">
+                                    {{ formStatus.message }}
+                                </p>
+                            </div>
+                        </form>
+                   </div>
+                </div>
+              </transition>
             </div>
           </div>
         </main>
@@ -221,6 +225,25 @@ const activeTab = ref(null);
 const tabs = ['Identification', 'Skills', 'Operations', 'Service Record', 'Certifications', 'Comms'];
 const expandedProject = ref(null);
 
+// FIXED: Click Ripple Effect Logic
+const createRipple = (event) => {
+    const container = event.currentTarget;
+    const rippleEl = document.createElement('div');
+    rippleEl.className = 'click-ripple';
+
+    // We append to the body to ensure it's always on top and positioned correctly
+    document.body.appendChild(rippleEl);
+
+    // Position based on viewport coordinates
+    rippleEl.style.left = `${event.clientX}px`;
+    rippleEl.style.top = `${event.clientY}px`;
+    
+    // Clean up the element after the animation is done
+    setTimeout(() => {
+        rippleEl.remove();
+    }, 600); // Must match the animation duration in CSS
+}
+
 const updateTime = () => {
     const now = new Date();
     currentTime.value = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -269,7 +292,6 @@ async function handleFormSubmit() {
 
 
 onMounted(() => {
-  // CORRECTED LOGIC: This function initializes the fade-in animations
   const initAOS = () => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -283,12 +305,10 @@ onMounted(() => {
     });
   };
 
-  // Boot-up sequence logic
   setTimeout(() => {
     isLoading.value = false;
-    activeTab.value = 'Identification';
-    // CORRECTED LOGIC: Wait for Vue to update the DOM, then initialize animations
     nextTick(() => {
+      activeTab.value = 'Identification';
       initAOS();
     });
   }, 3500);
@@ -349,15 +369,25 @@ onMounted(() => {
 .operative-name:before { left: 2px; text-shadow: -2px 0 var(--primary-accent); animation: glitch 3s linear infinite reverse; }
 .operative-name:after { left: -2px; text-shadow: 2px 0 var(--text-secondary); animation: glitch 3s linear infinite; }
 
-@keyframes typing { from { width: 0 } to { width: 100% } }
+@keyframes typing {
+  from { width: 0; border-right-color: var(--primary-accent); }
+  99.9% { border-right-color: var(--primary-accent); }
+  to { width: 100%; border-right-color: transparent; }
+}
 .typing-animation {
     display: inline-block; overflow: hidden; white-space: nowrap;
-    border-right: .15em solid var(--primary-accent);
-    animation: typing 2s steps(40, end);
-    animation-fill-mode: forwards;
+    border-right: .15em solid transparent;
+    animation: typing 1.5s steps(30, end) forwards;
 }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0, 255, 65, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); } }
 .tab-button.active { animation: pulse 2s infinite; }
+
+@keyframes text-flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% { text-shadow: 0 0 2px var(--primary-accent), 0 0 4px var(--primary-accent); opacity: 1; }
+    20%, 24%, 55% { text-shadow: none; opacity: 0.8; }
+}
+.clock, .status-active { animation: text-flicker 7s linear infinite; }
+
 
 /* --- Boot Loader --- */
 .boot-loader {
@@ -375,11 +405,29 @@ onMounted(() => {
 @keyframes boot-line { 0% { opacity: 0; } 20% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; } }
 .boot-text p:last-child { animation: boot-line 1s forwards; animation-delay: 2.8s; }
 
+
+/* -- FIXED: Click Ripple -- */
+.click-ripple {
+    position: fixed;
+    border-radius: 50%;
+    background: rgba(0, 255, 65, 0.5);
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+    width: 50px;
+    height: 50px;
+    z-index: 9999;
+    animation: ripple-effect 0.6s linear;
+}
+@keyframes ripple-effect { to { transform: translate(-50%, -50%) scale(5); opacity: 0; } }
+
+/* --- Tab transition --- */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
 /* --- BASE STYLES --- */
 .hud-border { position: fixed; top: 1rem; right: 1rem; bottom: 1rem; left: 1rem; border: 1px solid var(--border-color); pointer-events: none; z-index: 10; }
 .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 150px rgba(0,0,0,0.8); pointer-events: none; z-index: 2; }
 .hud-header { display: flex; justify-content: space-between; align-items: center; position: absolute; top: 1rem; left: 1rem; right: 1rem; padding: 0.5rem 1rem; font-family: var(--font-heading); letter-spacing: 2px; font-size: 1.2rem; z-index: 20; }
-.status-active { color: var(--primary-accent); }
 .header-right { display: flex; gap: 2rem; }
 .dossier { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 5rem; position: relative; z-index: 5; }
 @media (min-width: 1024px) { .dossier { grid-template-columns: 400px 1fr; } }
@@ -418,8 +466,7 @@ onMounted(() => {
 .tab-button { flex: 1 1 auto; padding: 1rem; background: none; border: none; border-right: 1px solid var(--border-color); color: var(--text-secondary); font-family: var(--font-heading); font-size: 1.2rem; letter-spacing: 2px; cursor: pointer; transition: all 0.3s ease; }
 .tab-button:last-child { border-right: none; }
 .tab-button:hover, .tab-button.active { background-color: var(--primary-accent); color: var(--bg-color); }
-.tab-content { padding: 2rem; }
-.section-title { font-family: var(--font-heading); font-size: 1.8rem; letter-spacing: 1px; color: var(--primary-accent); margin-bottom: 1.5rem; }
+.tab-content { padding: 2rem; position: relative;}
 .bio { line-height: 1.8; color: var(--text-secondary); }
 
 .skill-category { margin-bottom: 2rem; }
