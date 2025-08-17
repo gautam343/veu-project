@@ -1,157 +1,168 @@
 <template>
   <div class="mw-container">
+    <div class="animated-grid"></div>
     <div class="scanline-effect"></div>
     <div class="hud-border"></div>
     <div class="vignette"></div>
 
-    <header class="hud-header">
-      <div class="header-left">
-        <span class="logo-text">RECRUITMENT FILE // GS_25</span>
-      </div>
-      <div class="header-right">
-        <span class="status-text">STATUS: <span class="status-active">ACTIVE</span></span>
-        <span class="clock">{{ currentTime }}</span>
-      </div>
-    </header>
+    <div v-if="isLoading" class="boot-loader">
+        <div class="boot-text">
+            <p>INITIALIZING BIOS... <span class="text-accent">OK</span></p>
+            <p>LOADING KERNEL... <span class="text-accent">OK</span></p>
+            <p>CONNECTING TO RECRUITMENT SERVER... <span class="text-accent">SECURE</span></p>
+            <p>DECRYPTING OPERATIVE FILE: GS_25...</p>
+            <p>ACCESS GRANTED.</p>
+        </div>
+    </div>
 
-    <main class="dossier">
-      <div class="operative-id-panel" data-aos="fade-right">
-        <div class="operative-photo">
-          <img :src="profilePictureUrl" alt="Operative Photo" class="operative-image">
-        </div>
-        <div class="operative-info">
-          <h1 class="operative-name">{{ name }}</h1>
-          <p class="operative-title">{{ profession }}</p>
-        </div>
-        <div class="operative-links">
-          <a v-for="link in socials" :key="link.name" :href="link.url" target="_blank" class="link-button">
-            {{ link.name }}
-          </a>
-        </div>
-        <div class="contact-actions">
-           <a :href="resumeUrl" target="_blank" class="action-button">DOWNLOAD DOSSIER</a>
-        </div>
-      </div>
-
-      <div class="tabs-panel" data-aos="fade-left" data-aos-delay="200">
-        <div class="tabs-nav">
-          <button
-            v-for="tab in tabs"
-            :key="tab"
-            @click="activeTab = tab"
-            :class="{ 'active': activeTab === tab }"
-            class="tab-button"
-          >
-            {{ tab }}
-          </button>
-        </div>
-
-        <div class="tab-content">
-          <div v-if="activeTab === 'Identification'" class="content-section">
-            <h2 class="section-title">SUBJECT ANALYSIS</h2>
-            <p class="bio">{{ bio }}</p>
+    <template v-if="!isLoading">
+        <header class="hud-header">
+          <div class="header-left">
+            <span class="logo-text">RECRUITMENT FILE // GS_25</span>
           </div>
+          <div class="header-right">
+            <span class="status-text">STATUS: <span class="status-active">ACTIVE</span></span>
+            <span class="clock">{{ currentTime }}</span>
+          </div>
+        </header>
 
-          <div v-if="activeTab === 'Skills'" class="content-section">
-             <h2 class="section-title">SKILLS</h2>
-             <div class="skill-category" v-for="(skillList, category) in skills" :key="category">
-                <h3 class="skill-category-title">{{ formatSkillCategory(category) }}</h3>
-                <div class="skill-grid">
-                  <div v-for="skill in skillList" :key="skill" class="skill-tag">
-                    {{ skill }}
-                  </div>
-                </div>
+        <main class="dossier">
+          <div class="operative-id-panel" data-aos="fade-right">
+            <div class="operative-photo">
+              <img :src="profilePictureUrl" alt="Operative Photo" class="operative-image">
+            </div>
+            <div class="operative-info">
+              <h1 class="operative-name" :data-text="name">{{ name }}</h1>
+              <p class="operative-title">{{ profession }}</p>
+            </div>
+            <div class="operative-links">
+              <a v-for="link in socials" :key="link.name" :href="link.url" target="_blank" class="link-button">
+                {{ link.name }}
+              </a>
+            </div>
+            <div class="contact-actions">
+               <a :href="resumeUrl" target="_blank" class="action-button">DOWNLOAD DOSSIER</a>
             </div>
           </div>
 
-          <div v-if="activeTab === 'Operations'" class="content-section">
-            <h2 class="section-title">OPERATIONS</h2>
-            <div class="op-list">
-              <div
-                class="op-item"
-                v-for="project in projects"
-                :key="project.title"
-                @click="toggleProject(project.title)"
-                :class="{ 'expanded': expandedProject === project.title }"
+          <div class="tabs-panel" data-aos="fade-left" data-aos-delay="200">
+            <div class="tabs-nav">
+              <button
+                v-for="tab in tabs"
+                :key="tab"
+                @click="activeTab = tab"
+                :class="{ 'active': activeTab === tab }"
+                class="tab-button"
               >
-                <div class="op-header">
-                  <h3 class="op-title">{{ project.title }}</h3>
-                  <span class="op-status">COMPLETED</span>
-                </div>
-                <p class="op-desc">{{ project.description }}</p>
-                <div class="op-tech">
-                    <strong>TECH DEPLOYED:</strong> {{ project.tech }}
-                </div>
-                <transition name="expand">
-                    <div v-if="expandedProject === project.title" class="op-details">
-                        <img :src="project.image" alt="Operation Screenshot" class="op-image">
-                    </div>
-                </transition>
+                {{ tab }}
+              </button>
+            </div>
+
+            <div class="tab-content">
+              <div v-if="activeTab === 'Identification'" class="content-section">
+                <h2 class="section-title typing-animation">SUBJECT ANALYSIS</h2>
+                <p class="bio">{{ bio }}</p>
               </div>
+
+              <div v-if="activeTab === 'Skills'" class="content-section">
+                 <h2 class="section-title typing-animation">SKILLS</h2>
+                 <div class="skill-category" v-for="(skillList, category) in skills" :key="category">
+                    <h3 class="skill-category-title">{{ formatSkillCategory(category) }}</h3>
+                    <div class="skill-grid">
+                      <div v-for="skill in skillList" :key="skill" class="skill-tag">
+                        {{ skill }}
+                      </div>
+                    </div>
+                </div>
+              </div>
+
+              <div v-if="activeTab === 'Operations'" class="content-section">
+                <h2 class="section-title typing-animation">OPERATIONS</h2>
+                <div class="op-list">
+                  <div
+                    class="op-item"
+                    v-for="project in projects"
+                    :key="project.title"
+                    @click="toggleProject(project.title)"
+                    :class="{ 'expanded': expandedProject === project.title }"
+                  >
+                    <div class="op-header">
+                      <h3 class="op-title">{{ project.title }}</h3>
+                      <span class="op-status">COMPLETED</span>
+                    </div>
+                    <p class="op-desc">{{ project.description }}</p>
+                    <div class="op-tech">
+                        <strong>TECH DEPLOYED:</strong> {{ project.tech }}
+                    </div>
+                    <transition name="expand">
+                        <div v-if="expandedProject === project.title" class="op-details">
+                            <img :src="project.image" alt="Operation Screenshot" class="op-image">
+                        </div>
+                    </transition>
+                  </div>
+                </div>
+              </div>
+
+              <div v-if="activeTab === 'Service Record'" class="content-section">
+                  <h2 class="section-title typing-animation">SERVICE RECORD</h2>
+                  <div class="record-list">
+                      <div class="record-item" v-for="exp in experience" :key="exp.title">
+                          <div class="record-info">
+                              <h3 class="record-title">{{ exp.title }}</h3>
+                              <p class="record-meta">{{ exp.company }}</p>
+                          </div>
+                          <div class="record-duration">{{ exp.duration }}</div>
+                      </div>
+                  </div>
+              </div>
+
+              <div v-if="activeTab === 'Certifications'" class="content-section">
+                  <h2 class="section-title typing-animation">AWARDS & COMMENDATIONS</h2>
+                  <div class="cert-list">
+                      <div class="cert-item" v-for="cert in certifications" :key="cert.name">
+                          <div class="cert-info">
+                              <h3 class="cert-title">{{ cert.name }}</h3>
+                              <p class="cert-issuer">{{ cert.issuer }}</p>
+                          </div>
+                          <a :href="cert.url" target="_blank" class="action-button cert-button">VIEW CREDENTIAL</a>
+                      </div>
+                  </div>
+              </div>
+
+              <div v-if="activeTab === 'Comms'" class="content-section">
+                    <h2 class="section-title typing-animation">ESTABLISH COMMS</h2>
+                    <form @submit.prevent="handleFormSubmit" class="contact-form">
+                        <div class="form-group">
+                            <label for="callsign">YOUR CALLSIGN (NAME)</label>
+                            <input type="text" id="callsign" v-model="formData.name" required class="form-input">
+                        </div>
+                         <div class="form-group">
+                            <label for="email">YOUR EMAIL</label>
+                            <input type="email" id="email" v-model="formData.email" required class="form-input">
+                        </div>
+                         <div class="form-group">
+                            <label for="message">MESSAGE</label>
+                            <textarea id="message" v-model="formData.message" required rows="5" class="form-textarea"></textarea>
+                        </div>
+                        <div class="form-footer">
+                            <button type="submit" class="action-button primary" :disabled="formStatus.isSending">
+                                {{ formStatus.isSending ? 'TRANSMITTING...' : 'SEND MESSAGE' }}
+                            </button>
+                            <p v-if="formStatus.message" class="form-status" :class="{ 'success': formStatus.isSuccess, 'error': !formStatus.isSuccess }">
+                                {{ formStatus.message }}
+                            </p>
+                        </div>
+                    </form>
+               </div>
             </div>
           </div>
-
-          <div v-if="activeTab === 'Service Record'" class="content-section">
-              <h2 class="section-title">SERVICE RECORD</h2>
-              <div class="record-list">
-                  <div class="record-item" v-for="exp in experience" :key="exp.title">
-                      <div class="record-info">
-                          <h3 class="record-title">{{ exp.title }}</h3>
-                          <p class="record-meta">{{ exp.company }}</p>
-                      </div>
-                      <div class="record-duration">{{ exp.duration }}</div>
-                  </div>
-              </div>
-          </div>
-
-          <div v-if="activeTab === 'Certifications'" class="content-section">
-              <h2 class="section-title">AWARDS & COMMENDATIONS</h2>
-              <div class="cert-list">
-                  <div class="cert-item" v-for="cert in certifications" :key="cert.name">
-                      <div class="cert-info">
-                          <h3 class="cert-title">{{ cert.name }}</h3>
-                          <p class="cert-issuer">{{ cert.issuer }}</p>
-                      </div>
-                      <a :href="cert.url" target="_blank" class="action-button cert-button">VIEW CREDENTIAL</a>
-                  </div>
-              </div>
-          </div>
-
-
-          <div v-if="activeTab === 'Comms'" class="content-section">
-                <h2 class="section-title">ESTABLISH COMMS</h2>
-                <form @submit.prevent="handleFormSubmit" class="contact-form">
-                    <div class="form-group">
-                        <label for="callsign">YOUR CALLSIGN (NAME)</label>
-                        <input type="text" id="callsign" v-model="formData.name" required class="form-input">
-                    </div>
-                     <div class="form-group">
-                        <label for="email">YOUR EMAIL</label>
-                        <input type="email" id="email" v-model="formData.email" required class="form-input">
-                    </div>
-                     <div class="form-group">
-                        <label for="message">MESSAGE</label>
-                        <textarea id="message" v-model="formData.message" required rows="5" class="form-textarea"></textarea>
-                    </div>
-                    <div class="form-footer">
-                        <button type="submit" class="action-button primary" :disabled="formStatus.isSending">
-                            {{ formStatus.isSending ? 'TRANSMITTING...' : 'SEND MESSAGE' }}
-                        </button>
-                        <p v-if="formStatus.message" class="form-status" :class="{ 'success': formStatus.isSuccess, 'error': !formStatus.isSuccess }">
-                            {{ formStatus.message }}
-                        </p>
-                    </div>
-                </form>
-           </div>
-
-        </div>
-      </div>
-    </main>
+        </main>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, nextTick } from 'vue';
 
 // --- Data Store ---
 const name = ref('Gautam Sharma');
@@ -204,8 +215,9 @@ const certifications = ref([
 
 
 // --- UI Logic ---
+const isLoading = ref(true);
 const currentTime = ref('');
-const activeTab = ref('Identification');
+const activeTab = ref(null);
 const tabs = ['Identification', 'Skills', 'Operations', 'Service Record', 'Certifications', 'Comms'];
 const expandedProject = ref(null);
 
@@ -257,14 +269,32 @@ async function handleFormSubmit() {
 
 
 onMounted(() => {
+  // CORRECTED LOGIC: This function initializes the fade-in animations
+  const initAOS = () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('[data-aos]').forEach(el => {
+      observer.observe(el);
+    });
+  };
+
+  // Boot-up sequence logic
+  setTimeout(() => {
+    isLoading.value = false;
+    activeTab.value = 'Identification';
+    // CORRECTED LOGIC: Wait for Vue to update the DOM, then initialize animations
+    nextTick(() => {
+      initAOS();
+    });
+  }, 3500);
+
   updateTime();
   setInterval(updateTime, 1000);
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) { entry.target.classList.add('is-visible'); }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('[data-aos]').forEach(el => { observer.observe(el); });
 });
 </script>
 
@@ -277,7 +307,7 @@ onMounted(() => {
   --text-primary: #EAEAEA;
   --text-secondary: #8A9A9A;
   --border-color: rgba(0, 255, 65, 0.2);
-  --panel-bg: rgba(1, 2, 10, 0.7);
+  --panel-bg: rgba(1, 2, 10, 0.85);
   --font-heading: 'Teko', sans-serif;
   --font-body: 'Roboto Mono', monospace;
 
@@ -285,11 +315,16 @@ onMounted(() => {
   color: var(--text-primary);
   font-family: var(--font-body);
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden;
   position: relative;
   padding: 2rem;
   box-sizing: border-box;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%2300FF41" stroke-width="2"><path d="M12 2v4M12 18v4M22 12h-4M6 12H2M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg>') 12 12, auto;
 }
+
+/* --- IMMERSIVE & ANIMATED ELEMENTS --- */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.dossier, .hud-header { animation: fadeIn 1s ease-in; }
 
 @keyframes scanline { 0% { transform: translateY(0); } 100% { transform: translateY(100vh); } }
 .scanline-effect {
@@ -297,6 +332,50 @@ onMounted(() => {
   background: linear-gradient(to bottom, rgba(0,255,65,0) 0%, rgba(0,255,65,0.05) 50%, rgba(0,255,65,0) 100%);
   animation: scanline 6s linear infinite; z-index: 1; pointer-events: none;
 }
+@keyframes moveGrid { 0% { background-position: 0 0; } 100% { background-position: 40px 40px; } }
+.animated-grid {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: moveGrid 10s linear infinite;
+    z-index: 0; opacity: 0.3;
+}
+@keyframes glitch { 2%,64%{ transform: translate(2px,0) skew(0deg); } 4%,60%{ transform: translate(-2px,0) skew(0deg); } 62%{ transform: translate(0,0) skew(5deg); } }
+.operative-name { position: relative; }
+.operative-name:before, .operative-name:after {
+    content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--panel-bg); overflow: hidden; clip-path: inset(0 0 0 0);
+}
+.operative-name:before { left: 2px; text-shadow: -2px 0 var(--primary-accent); animation: glitch 3s linear infinite reverse; }
+.operative-name:after { left: -2px; text-shadow: 2px 0 var(--text-secondary); animation: glitch 3s linear infinite; }
+
+@keyframes typing { from { width: 0 } to { width: 100% } }
+.typing-animation {
+    display: inline-block; overflow: hidden; white-space: nowrap;
+    border-right: .15em solid var(--primary-accent);
+    animation: typing 2s steps(40, end);
+    animation-fill-mode: forwards;
+}
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0, 255, 65, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0); } }
+.tab-button.active { animation: pulse 2s infinite; }
+
+/* --- Boot Loader --- */
+.boot-loader {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-color); z-index: 100; display: flex;
+    align-items: center; justify-content: center;
+}
+.boot-text { font-family: var(--font-body); font-size: 1.2rem; }
+.boot-text p { margin: 0.5rem 0; opacity: 0; animation: boot-line 3s forwards; }
+.boot-text p:nth-child(2) { animation-delay: 0.5s; }
+.boot-text p:nth-child(3) { animation-delay: 1s; }
+.boot-text p:nth-child(4) { animation-delay: 1.8s; }
+.boot-text p:nth-child(5) { animation-delay: 2.8s; }
+.boot-text .text-accent { color: var(--primary-accent); }
+@keyframes boot-line { 0% { opacity: 0; } 20% { opacity: 1; } 90% { opacity: 1; } 100% { opacity: 0; } }
+.boot-text p:last-child { animation: boot-line 1s forwards; animation-delay: 2.8s; }
+
+/* --- BASE STYLES --- */
 .hud-border { position: fixed; top: 1rem; right: 1rem; bottom: 1rem; left: 1rem; border: 1px solid var(--border-color); pointer-events: none; z-index: 10; }
 .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-shadow: inset 0 0 150px rgba(0,0,0,0.8); pointer-events: none; z-index: 2; }
 .hud-header { display: flex; justify-content: space-between; align-items: center; position: absolute; top: 1rem; left: 1rem; right: 1rem; padding: 0.5rem 1rem; font-family: var(--font-heading); letter-spacing: 2px; font-size: 1.2rem; z-index: 20; }
@@ -305,28 +384,36 @@ onMounted(() => {
 .dossier { display: grid; grid-template-columns: 1fr; gap: 2rem; margin-top: 5rem; position: relative; z-index: 5; }
 @media (min-width: 1024px) { .dossier { grid-template-columns: 400px 1fr; } }
 
-.operative-id-panel { background: var(--panel-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); padding: 2rem; text-align: center; }
+.operative-id-panel { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 2rem; text-align: center; }
 .operative-photo {
   width: 120px; height: 120px; margin: 0 auto 1.5rem auto; border: 2px solid var(--primary-accent);
   background: rgba(0, 255, 65, 0.1); padding: 5px; box-sizing: border-box;
 }
-.operative-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+.operative-image { width: 100%; height: 100%; object-fit: cover; }
 .operative-name { font-family: var(--font-heading); font-size: 3rem; letter-spacing: 2px; margin: 0; }
 .operative-title { color: var(--text-secondary); font-size: 1rem; margin-bottom: 2rem; }
 .operative-links { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
-.link-button { border: 1px solid var(--border-color); padding: 0.75rem; color: var(--text-secondary); text-decoration: none; transition: all 0.3s ease; }
+.link-button, .action-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+.link-button:hover:before, .action-button:hover:before {
+    content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,255,65,0.2), transparent);
+    animation: button-glitch 0.5s;
+}
+@keyframes button-glitch { 0% { left: -100%; } 50% { left: 0%; } 100% { left: 100%; } }
+
+.link-button { border: 1px solid var(--border-color); padding: 0.75rem; color: var(--text-secondary); text-decoration: none; }
 .link-button:hover { background-color: var(--primary-accent); color: var(--bg-color); border-color: var(--primary-accent); }
 .contact-actions { display: flex; flex-direction: column; gap: 1rem; }
-.action-button { padding: 1rem; font-family: var(--font-heading); font-size: 1.2rem; letter-spacing: 1px; text-decoration: none; background: transparent; border: 1px solid var(--primary-accent); color: var(--primary-accent); transition: all 0.3s ease; cursor: pointer; }
+.action-button { padding: 1rem; font-family: var(--font-heading); font-size: 1.2rem; letter-spacing: 1px; text-decoration: none; background: transparent; border: 1px solid var(--primary-accent); color: var(--primary-accent); cursor: pointer; }
 .action-button.primary { background: var(--primary-accent); color: var(--bg-color); }
 .action-button:hover { filter: brightness(1.2); }
 .action-button:disabled { filter: grayscale(1); cursor: not-allowed; background-color: var(--text-secondary); border-color: var(--text-secondary); color: var(--bg-color); }
 
-.tabs-panel { background: var(--panel-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); }
+.tabs-panel { background: var(--panel-bg); border: 1px solid var(--border-color); }
 .tabs-nav { display: flex; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
 .tab-button { flex: 1 1 auto; padding: 1rem; background: none; border: none; border-right: 1px solid var(--border-color); color: var(--text-secondary); font-family: var(--font-heading); font-size: 1.2rem; letter-spacing: 2px; cursor: pointer; transition: all 0.3s ease; }
 .tab-button:last-child { border-right: none; }
