@@ -17,7 +17,7 @@
     <main class="dossier">
       <div class="operative-id-panel" data-aos="fade-right">
         <div class="operative-photo">
-          <span>GS</span>
+          <img :src="profilePictureUrl" alt="Operative Photo" class="operative-image">
         </div>
         <div class="operative-info">
           <h1 class="operative-name">{{ name }}</h1>
@@ -29,7 +29,7 @@
           </a>
         </div>
         <div class="contact-actions">
-           <a :href="resumeUrl" target="_blank" class="action-button">DOWNLOAD RESUME</a>
+           <a :href="resumeUrl" target="_blank" class="action-button">DOWNLOAD DOSSIER</a>
         </div>
       </div>
 
@@ -52,7 +52,8 @@
             <p class="bio">{{ bio }}</p>
           </div>
 
-          <div v-if="activeTab === 'Proficiencies'" class="content-section">
+          <div v-if="activeTab === 'Skills'" class="content-section">
+             <h2 class="section-title">SKILLS</h2>
              <div class="skill-category" v-for="(skillList, category) in skills" :key="category">
                 <h3 class="skill-category-title">{{ formatSkillCategory(category) }}</h3>
                 <div class="skill-grid">
@@ -64,6 +65,7 @@
           </div>
 
           <div v-if="activeTab === 'Operations'" class="content-section">
+            <h2 class="section-title">OPERATIONS</h2>
             <div class="op-list">
               <div
                 class="op-item"
@@ -80,7 +82,6 @@
                 <div class="op-tech">
                     <strong>TECH DEPLOYED:</strong> {{ project.tech }}
                 </div>
-
                 <transition name="expand">
                     <div v-if="expandedProject === project.title" class="op-details">
                         <img :src="project.image" alt="Operation Screenshot" class="op-image">
@@ -91,6 +92,7 @@
           </div>
 
           <div v-if="activeTab === 'Service Record'" class="content-section">
+              <h2 class="section-title">SERVICE RECORD</h2>
               <div class="record-list">
                   <div class="record-item" v-for="exp in experience" :key="exp.title">
                       <div class="record-info">
@@ -101,7 +103,7 @@
                   </div>
               </div>
           </div>
-          
+
           <div v-if="activeTab === 'Certifications'" class="content-section">
               <h2 class="section-title">AWARDS & COMMENDATIONS</h2>
               <div class="cert-list">
@@ -154,6 +156,7 @@ import { ref, reactive, onMounted } from 'vue';
 // --- Data Store ---
 const name = ref('Gautam Sharma');
 const profession = ref('Data Science Operative | ML Specialist');
+const profilePictureUrl = ref('/profile.jpg');
 const bio = ref(`A highly motivated and analytical operative with field experience in leveraging predictive modeling and advanced analytics to resolve complex strategic challenges. Specializes in the application of machine learning algorithms to extract actionable intelligence and drive mission success.`);
 const resumeUrl = ref('Gautam-Sharma-Resume.pdf');
 const projects = ref([
@@ -161,13 +164,13 @@ const projects = ref([
     title: 'Operation Credit Score',
     tech: 'MERN Stack, Jenkins, Docker',
     description: "Deployed a containerized MERN stack application to generate real-time credit scores using a Random Forest Regressor model with CI/CD pipelines.",
-    image: '/KYCS.png' // Image for the project
+    image: '/KYCS.png'
   },
   {
     title: 'Operation Ant Colony',
     tech: 'Python, networkx',
     description: "Executed a simulation of the Ant Colony Optimization (ACO) algorithm for the Traveling Salesperson Problem (TSP), developing a novel clustering method from the results.",
-    image: '/ACO.png' // Image for the project
+    image: '/ACO.png'
   }
 ]);
 const skills = ref({
@@ -179,12 +182,12 @@ const experience = ref([
     {
         title: 'Marketing Analytics Intern',
         company: 'Super Collections',
-        duration: 'Q2 2025',
+        duration: 'June 2025 - Aug 2025',
     },
     {
-        title: 'Learning Assistant, PsyOps',
+        title: 'Learning Assistant, Digital Marketing',
         company: 'COEET, NIIT University',
-        duration: 'Q3-Q4 2024',
+        duration: 'Aug 2024 - Dec 2024',
     }
 ]);
 const socials = ref([
@@ -203,8 +206,8 @@ const certifications = ref([
 // --- UI Logic ---
 const currentTime = ref('');
 const activeTab = ref('Identification');
-const tabs = ['Identification', 'Proficiencies', 'Operations', 'Service Record', 'Certifications', 'Comms'];
-const expandedProject = ref(null); // Tracks the currently expanded project
+const tabs = ['Identification', 'Skills', 'Operations', 'Service Record', 'Certifications', 'Comms'];
+const expandedProject = ref(null);
 
 const updateTime = () => {
     const now = new Date();
@@ -217,15 +220,14 @@ const formatSkillCategory = (category) => {
 
 const toggleProject = (projectTitle) => {
     if (expandedProject.value === projectTitle) {
-        expandedProject.value = null; // Collapse if already open
+        expandedProject.value = null;
     } else {
-        expandedProject.value = projectTitle; // Expand the clicked one
+        expandedProject.value = projectTitle;
     }
 };
 
-
 // --- Form Submission Logic ---
-const formspreeEndpoint = 'https://formspree.io/f/xnnzyvpo'; // <-- IMPORTANT: REPLACE THIS
+const formspreeEndpoint = 'https://formspree.io/f/xnnzyvpo';
 
 const formData = reactive({ name: '', email: '', message: '' });
 const formStatus = reactive({ isSending: false, isSuccess: false, message: '' });
@@ -304,7 +306,15 @@ onMounted(() => {
 @media (min-width: 1024px) { .dossier { grid-template-columns: 400px 1fr; } }
 
 .operative-id-panel { background: var(--panel-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); padding: 2rem; text-align: center; }
-.operative-photo { width: 120px; height: 120px; margin: 0 auto 1.5rem auto; border: 2px solid var(--primary-accent); background: rgba(0, 255, 65, 0.1); display: flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 4rem; }
+.operative-photo {
+  width: 120px; height: 120px; margin: 0 auto 1.5rem auto; border: 2px solid var(--primary-accent);
+  background: rgba(0, 255, 65, 0.1); padding: 5px; box-sizing: border-box;
+}
+.operative-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .operative-name { font-family: var(--font-heading); font-size: 3rem; letter-spacing: 2px; margin: 0; }
 .operative-title { color: var(--text-secondary); font-size: 1rem; margin-bottom: 2rem; }
 .operative-links { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
